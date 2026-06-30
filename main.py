@@ -1,158 +1,76 @@
+import argparse
 import json
-import re
-from pathlib import Path
 
-# ------------------------
-# CONFIG
-# ------------------------
+from src.extractors.ats_parser import parse_ats
+from src.extractors.csv_parser import parse_csv
+from src.extractors.notes_parser import parse_notes
 
-SOURCE_CONFIDENCE = {
-    "ats": 0.95,
-    "notes": 0.85
-}
+from src.core.merger import merge_records
+from src.core.validator import validate_profile
 
-SKILL_MAP = {
-    "python": "Python",
-    "ml": "Machine Learning",
-    "machine learning": "Machine Learning",
-    "sql": "SQL"
-}
+from src.output.projector import project
 
-# ------------------------
-# ATS PARSER
-# ------------------------
 
-def parse_ats(path):
+def main():
 
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    parser = argparse.ArgumentParser()
 
-    return {
-        "full_name": data.get("candidateName"),
-        "emails": [data.get("candidateEmail")],
-        "phones": [data.get("candidatePhone")],
-        "skills": data.get("skills", []),
-        "source": "ats"
-    }
-
-# ------------------------
-# NOTES PARSER
-# ------------------------
-
-def parse_notes(path):
-
-    text = Path(path).read_text(encoding="utf-8")
-
-    email = re.findall(
-        r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}",
-        text
+    parser.add_argument(
+        "--ats"
     )
 
-    phone = re.findall(
-        r"\d{10}",
-        text
+    parser.add_argument(
+        "--csv"
     )
 
-    skills = []
-
-    for skill in SKILL_MAP.keys():
-        if skill in text.lower():
-            skills.append(skill)
-
-    return {
-        "emails": email,
-        "phones": phone,
-        "skills": skills,
-        "source": "notes"
-    }
-
-# ------------------------
-# NORMALIZATION
-# ------------------------
-
-def normalize_skills(skills):
-
-    result = []
-
-    for skill in skills:
-
-        skill = skill.lower()
-
-        if skill in SKILL_MAP:
-            result.append(SKILL_MAP[skill])
-
-        else:
-            result.append(skill.title())
-
-    return sorted(list(set(result)))
-
-# ------------------------
-# MERGE
-# ------------------------
-
-def merge_records(records):
-
-    output = {
-        "candidate_id": "CAND001",
-        "full_name": None,
-        "emails": [],
-        "phones": [],
-        "skills": [],
-        "provenance": []
-    }
-
-    best_name_score = -1
-
-    for r in records:
-
-        score = SOURCE_CONFIDENCE[r["source"]]
-
-        if r.get("full_name") and score > best_name_score:
-
-            output["full_name"] = r["full_name"]
-            best_name_score = score
-
-            output["provenance"].append({
-                "field": "full_name",
-                "source": r["source"],
-                "confidence": score
-            })
-
-        output["emails"].extend(r.get("emails", []))
-        output["phones"].extend(r.get("phones", []))
-        output["skills"].extend(r.get("skills", []))
-
-    output["emails"] = sorted(list(set(output["emails"])))
-    output["phones"] = sorted(list(set(output["phones"])))
-    output["skills"] = normalize_skills(output["skills"])
-
-    output["overall_confidence"] = round(
-        sum(SOURCE_CONFIDENCE.values()) /
-        len(SOURCE_CONFIDENCE),
-        2
+    parser.add_argument(
+        "--notes"
     )
 
-    return output
-
-# ------------------------
-# MAIN
-# ------------------------
-
-if __name__ == "__main__":
-
-    ats = parse_ats("data/ats.json")
-
-    notes = parse_notes(
-        "data/recruiter_notes.txt"
+    parser.add_argument(
+        "--config",
+        required=True
     )
 
-    final_record = merge_records(
-        [ats, notes]
+    args = parser.parse_args()
+
+    records = []
+
+    if args.ats:
+        records.append(
+            parse_ats(args.ats)
+        )
+
+    if args.csv:
+        records.append(
+            parse_csv(args.csv)
+        )
+
+    if args.notes:
+        records.append(
+            parse_notes(args.notes)
+        )
+
+    profile = merge_records(
+        records
+    )
+
+    validate_profile(
+        profile
+    )
+
+    output = project(
+        profile,
+        args.config
     )
 
     print(
         json.dumps(
-            final_record,
+            output,
             indent=4
         )
     )
+
+
+if __name__ == "__main__":
+    main()
