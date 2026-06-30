@@ -1,11 +1,11 @@
-name: CI
+name: Run Candidate Transformer
 
 on:
-  push:
+  workflow_dispatch:
 
 jobs:
 
-  build:
+  run:
 
     runs-on: ubuntu-latest
 
@@ -14,9 +14,24 @@ jobs:
     - uses: actions/checkout@v4
 
     - uses: actions/setup-python@v5
+
       with:
         python-version: "3.11"
 
     - run: pip install -r requirements.txt
 
-    - run: pytest
+    - name: Default Config
+      run: |
+        python main.py \
+        --ats data/ats.json \
+        --csv data/recruiter.csv \
+        --notes data/notes.txt \
+        --config configs/default.json
+
+    - name: Custom Config
+      run: |
+        python main.py \
+        --ats data/ats.json \
+        --csv data/recruiter.csv \
+        --notes data/notes.txt \
+        --config configs/custom.json
