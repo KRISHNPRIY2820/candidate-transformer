@@ -4,7 +4,7 @@ import json
 from src.extractors.ats_parser import parse_ats
 from src.extractors.csv_parser import parse_csv
 from src.extractors.notes_parser import parse_notes
-
+from src.extractors.resume_parser import parse_resume
 from src.core.merger import merge_records
 from src.core.validator import validate_profile
 
@@ -25,6 +25,9 @@ def main():
 
     parser.add_argument(
         "--notes"
+    )
+    parser.add_argument(
+    "--resume"
     )
 
     parser.add_argument(
@@ -49,6 +52,10 @@ def main():
     if args.notes:
         records.append(
             parse_notes(args.notes)
+        )
+    if args.resume:
+        records.append(
+            parse_resume(args.resume)
         )
 
     profile = merge_records(
