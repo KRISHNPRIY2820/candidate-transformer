@@ -1,2 +1,6 @@
-phonenumbers
+pandas
 pydantic
+phonenumbers
+dateparser
+rapidfuzz
+pytest
