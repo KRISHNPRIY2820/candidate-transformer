@@ -1,0 +1,41 @@
+{
+    "candidate_id": "CAND001",
+    "full_name": "Priyanshi Agrawal",
+    "emails": [
+        "priyanshi@gmail.com"
+    ],
+    "phones": [
+        "+919876543210"
+    ],
+    "skills": [
+        {
+            "name": "Machine Learning",
+            "confidence": 0.9,
+            "sources": [
+                "merged"
+            ]
+        },
+        {
+            "name": "Python",
+            "confidence": 0.9,
+            "sources": [
+                "merged"
+            ]
+        },
+        {
+            "name": "SQL",
+            "confidence": 0.9,
+            "sources": [
+                "merged"
+            ]
+        }
+    ],
+    "provenance": [
+        {
+            "field": "full_name",
+            "source": "ats",
+            "method": "highest_confidence"
+        }
+    ],
+    "overall_confidence": 0.85
+}
