@@ -4,6 +4,7 @@ import json
 from src.extractors.ats_parser import parse_ats
 from src.extractors.csv_parser import parse_csv
 from src.extractors.notes_parser import parse_notes
+# from src.extractors.resume_parser import parse_resume
 from src.extractors.resume_parser import parse_resume
 from src.core.merger import merge_records
 from src.core.validator import validate_profile
