@@ -1,0 +1,12 @@
+Priyanshi Agrawal
+
+Email: priyanshi@gmail.com
+Phone: 9876543210
+
+Skills:
+Python
+Machine Learning
+SQL
+
+Experience:
+Samsung R&D Intern
