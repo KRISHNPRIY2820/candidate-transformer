@@ -2,5 +2,7 @@
   "candidateName": "Priyanshi Agrawal",
   "candidateEmail": "priyanshi@gmail.com",
   "candidatePhone": "9876543210",
+  "currentOrg": "Samsung",
+  "designation": "R&D Intern",
   "skills": ["Python", "ML"]
 }
