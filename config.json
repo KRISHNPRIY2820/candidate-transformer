@@ -1,0 +1,13 @@
+{
+  "fields": [
+    {
+      "path": "full_name"
+    },
+    {
+      "path": "emails"
+    },
+    {
+      "path": "skills"
+    }
+  ]
+}
